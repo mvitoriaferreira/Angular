@@ -1,40 +1,26 @@
-
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
-
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$conFusion-primary: mat.define-palette(mat.$indigo-palette);
-$conFusion-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
-$conFusion-warn: mat.define-palette(mat.$red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$conFusion-theme: mat.define-light-theme((
-  color: (
-    primary: $conFusion-primary,
-    accent: $conFusion-accent,
-    warn: $conFusion-warn,
-  )
-));
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($conFusion-theme);
-
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import 'variables';
+@import '../node_modules/font-awesome/scss/font-awesome';
 
+$lt-gray: #ddd;
+$background-dark: #512DA8;
+$background-light: #9575CD;
+$background-pale: #D1C4E9;
+$primary-color-dark:   #512DA8;
+$primary-color:        #673AB7;
+$primary-color-light:  #D1C4E9;
+$primary-color-text:   #FFFFFF;
+$accent-color:         #FFC107;
+$primary-text-color:   #212121;
+$secondary-text-color: #757575;
+$divider-color:        #BDBDBD;
+
+@mixin zero-margin($pad-up-down, $pad-left-right) {
+    margin: 0px auto;
+    padding: $pad-up-down $pad-left-right;
+}
+
+//reset
 body {
   padding: 0;
   margin: 0;
@@ -48,3 +34,17 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.background-primary {
+  background-color: $background-dark!important;
+}
+.background-accent {
+  background-color: $accent-color!important;
+}
+.text-floral-white {
+  color: floralwhite!important;
+}
+
+.flex-spacer {
+flex: 1 1 auto;
+}
