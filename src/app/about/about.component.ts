@@ -14,8 +14,7 @@ export class AboutComponent implements OnInit {
   constructor(private leaderService: LeaderService,
     private route: ActivatedRoute) { }
 
-  ngOnInit(): void {
-    let id = this.route.snapshot.params['id'];
-    this.leaders = this.leaderService.getLeaders();
+  ngOnInit() {
+    this.leaderService.getLeaders().subscribe(leaders => this.leaders = leaders);
   }
 }

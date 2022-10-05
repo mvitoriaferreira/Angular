@@ -4,9 +4,6 @@
   <button mat-button mat-dialog-close>&times;</button>
 </mat-toolbar>
 
-<!-- Mostra as mudanças no formulário -->
-<p>{{ user | json }}</p>
-
 <!-- Faz a validação pelo Angular -->
 <form novalidate #loginForm="ngForm" (ngSubmit)="onSubmit">
   <mat-dialog-content>
