@@ -1,14 +1,14 @@
 <div class="container" fxLayout="row" fxLayout.sm="column" fxLayout.xs="column"
   fxLayoutAlign.gt-md="space-around center" fxLayoutGap="10px" fxLayoutGap.xs="0">
 
-  <div fxFlex="40" *ngIf="dish">
+  <div fxFlex="40" *ngIf="dish" [@visibility]="visibility">
     <mat-card>
       <mat-card-header>
         <mat-card-title>
-          <h3>{{dish.name | uppercase}}</h3>
+          <strong>{{dish.name | uppercase}}</strong>
         </mat-card-title>
       </mat-card-header>
-      <img height="200px" src={{dish.image}} alt={{dish.name}}>
+      <img mat-card-image="" src="{{BaseURL + dish.image}}" alt={{dish.name}}>
       <mat-card-content>
         <p>{{dish.description}}</p>
       </mat-card-content>
@@ -23,7 +23,7 @@
     </mat-card>
   </div>
 
-  <div fxFlex="40" *ngIf="dish">
+  <div fxFlex="40" *ngIf="dish" [@visibility]="visibility">
     <mat-list>
       <h3>Commments</h3>
       <mat-list-item *ngFor="let comment of dish.comments">
@@ -38,7 +38,7 @@
 
   <div fxFlex class="form-size">
     <h3>Send us your comment</h3>
-    <form novalidate [formGroup]="commentFormGroup" #fform="ngForm" (ngSubmit)="onSubmit()">
+    <form novalidate [formGroup]="commentForm" #fform="ngForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" placeholder="Your Name" type="text" required>
@@ -54,10 +54,10 @@
         </mat-form-field>
       </p>
       <button type="submit" mat-button class="background-primary text-floral-white"
-      [disabled]="commentFormGroup.invalid">Submit</button>
+      [disabled]="commentForm.invalid">Submit</button>
     </form>
   </div>
-  <div fxFlex [hidden]="dish || errMess">
+  <div fxFlex [hidden]="dish">
     <mat-spinner></mat-spinner> <h4>Loading... Please Wait</h4>
   </div>
   <div fxFlex *ngIf="errMess">

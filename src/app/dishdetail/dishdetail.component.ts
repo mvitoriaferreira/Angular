@@ -5,70 +5,81 @@ import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Comment } from '../shared/comment';
+import { visibility, flyInOut } from '../animations/app.animation';
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
-  styleUrls: ['./dishdetail.component.scss']
+  styleUrls: ['./dishdetail.component.scss'],
+  host: {
+    '[@flyInOut]': 'true',
+    'style': 'display: block;'
+    },
+    animations: [
+      flyInOut(),
+      visibility()
+    ]
 })
 
 export class DishdetailComponent implements OnInit {
 
-  commentFormGroup: FormGroup;
+  commentForm: FormGroup;
   comment: Comment;
   dish: Dish;
   dishIds: string[];
   prev: string;
   next: string;
   errMess: string;
+  visibility = 'shown';
 
-  @ViewChild('cform') feedbackFormDirective;
+  @ViewChild('cform') commentFormDirective;
 
   formErrors = {
-    'rating': '',
     'author': '',
-    'comment': '',
-    'date': ''
+    'comment': ''
   };
 
   validationMessages = {
-    'rating': '',
-    'name': {
-      'required': 'Name is required.',
-      'minlength': 'Name must be at least 2 characters long.',
-      'maxlength': 'Name cannot be more than 25 characters long.'
+    'author': {
+      'required': 'Author is required',
+      'minlength': 'Author must be at least 2 characters long',
     },
     'comment': {
-      'required': 'Comment is required.',
-      'minlength': 'Comment must be at least 5 characters long.',
-      'maxlength': 'Comment cannot be more than 25 characters long.'
-    },
-    'date': ''
+      'required': 'Comment is required',
+    }
   };
 
   constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
     private formBuilder: FormBuilder,
-    @Inject('BaseURL') private BaseURL) {
+    @Inject('BaseURL') public BaseURL) {
 
   }
 
+  ngOnInit() {
+    this.dishService.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
+    this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
+    .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id);
+      errmess => this.errMess = <any>errmess });
+    this.createForm();
+  }
+
   createForm() {
-    this.commentFormGroup = this.formBuilder.group({
+    this.commentForm = this.formBuilder.group({
       rating: [5, [Validators.required]],
-      author: ['', Validators.required, Validators.minLength(2), Validators.maxLength(25)],
-      comment: ['', Validators.required, Validators.minLength(5), Validators.maxLength(25)],
-      date: '',
+      author: ['', Validators.required, Validators.minLength(2)],
+      comment: ['', Validators.required]
     });
 
-    this.commentFormGroup.valueChanges.subscribe(data => this.onValueChanged(data));
+    this.commentForm.valueChanges.subscribe(data => this.onValueChanged(data));
 
     this.onValueChanged();
   }
 
   onValueChanged(data?: any) {
-    if (!this.commentFormGroup) { return; }
-    const form = this.commentFormGroup;
+    if (!this.commentForm) { return; }
+    const form = this.commentForm;
     for (const field in this.formErrors) {
       if (this.formErrors.hasOwnProperty(field)) {
         // clear previous error message (if any)
@@ -85,71 +96,6 @@ export class DishdetailComponent implements OnInit {
       }
     }
   }
-  onSubmit(): void {
-    const timeElapsed = Date.now();
-      const today = new Date(timeElapsed);
-
-        let commentForm = {
-          rating: this.dish.comments.length,
-          comment: this.commentFormGroup.value,
-          author: this.commentFormGroup.value,
-          date: today.toDateString()
-        };
-
-        this.dish.comments.push(commentForm);
-
-        console.log(commentForm.comment);
-        this.commentFormGroup.reset({
-          name: '',
-          comment: ''
-        });
-        this.feedbackFormDirective.resetForm();
-  }
-  /*
-    onSubmit() {
-      const timeElapsed = Date.now();
-      const today = new Date(timeElapsed);
-
-        let commentForm = {
-          rating: this.dish.comments.length,
-          comment: this.commentFormGroup.value,
-          author: this.commentFormGroup.value,
-          date: today.toDateString()
-        };
-
-        this.dish.comments.push(commentForm);
-
-        console.log(commentForm.comment);
-        this.commentFormGroup.reset({
-          name: '',
-          comment: ''
-        });
-        this.feedbackFormDirective.resetForm();
-    }
-  */
-  /* Não estou conseguindo subir a informação do comentário. Verificar depois.
-
-      onSubmit() {
-      this.commentFormGroup.value.date = Date.now().toString();
-    this.comment = this.commentFormGroup.value;
-    this.dish.comments.push(this.commentFormGroup);
-    this.commentFormGroup.reset({
-      rating: '',
-      comment: '',
-      author: '',
-      date: '',
-    });
-    this.feedbackFormDirective.resetForm();
-    }
-
-  */
-  ngOnInit() {
-    this.createForm();
-    this.dishService.getDishIds().subscribe((dishIds) => this.dishIds = dishIds);
-    this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
-      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
-        errmess => this.errMess = <any>errmess);
-  }
 
   setPrevNext(dishId: string) {
     const index = this.dishIds.indexOf(dishId);
@@ -159,6 +105,19 @@ export class DishdetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  onSubmit(): void {
+    this.commentForm.value.date = Date.now().toString();
+    this.comment = this.commentForm.value;
+    this.dish.comments.push(this.comment);
+    this.commentForm.reset({
+      rating: '',
+      comment: '',
+      author: '',
+      date: '',
+    });
+    this.commentFormDirective.resetForm();
   }
 
 }
