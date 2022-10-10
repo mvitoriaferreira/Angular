@@ -5,7 +5,7 @@ import { Promotion } from '../shared/promotion';
 import { PromotionService } from '../services/promotion.service';
 import { Leader } from '../shared/leader';
 import { LeaderService } from '../services/leader.service';
-import { flyInOut, visibility } from '../animations/app.animation';
+import { flyInOut, expand } from '../animations/app.animation';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -16,7 +16,7 @@ import { flyInOut, visibility } from '../animations/app.animation';
     },
     animations: [
       flyInOut(),
-      visibility()
+      expand()
     ]
 })
 export class HomeComponent implements OnInit {

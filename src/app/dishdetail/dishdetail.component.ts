@@ -6,8 +6,7 @@ import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Comment } from '../shared/comment';
-import { visibility, flyInOut } from '../animations/app.animation';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { visibility, flyInOut, expand } from '../animations/app.animation';
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
@@ -19,17 +18,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
     animations: [
       flyInOut(),
       visibility(),
-      trigger('visibility', [
-        state('shown', style({
-            transform: 'scale(1.0)',
-            opacity: 1
-        })),
-        state('hidden', style({
-            transform: 'scale(0.5)',
-            opacity: 0
-        })),
-        transition('* => *', animate('0.5s ease-in-out'))
-      ])
+      expand()
     ]
 })
 
