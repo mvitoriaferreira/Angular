@@ -19,8 +19,8 @@ export class FeedbackService {
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 
-  getFeedback(id: string): Observable<Feedback> {
-    return this.http.get<Feedback>(baseURL + 'feedbacks/' + id)
+  getFeedback(): Observable<Feedback> {
+    return this.http.get<Feedback>(baseURL + 'feedbacks/')
       .pipe(catchError(this.processHTTPMsgService.handleError));
   }
 

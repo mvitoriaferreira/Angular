@@ -79,5 +79,18 @@
       <button type="submit" mat-button class="background-primary text-floral-white"
         [disabled]="feedbackForm.invalid">Submit</button>
     </form>
+    <mat-list *ngif="isLoading &amp;&amp; !showResponse" [@expand]="">
+      <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+    </mat-list>
+    <div *ngif="isLoading &amp;&amp; showResponse" [@expand]="">
+      <h4>Your Submission</h4>
+      <p>First Name: {{ feedback.firstname }}</p>
+      <p>Last Name: {{ feedback.lastname }}</p>
+      <p>Tel. Number: {{ feedback.telnum }}</p>
+      <p>Email: {{ feedback.email }}</p>
+      <p>Contact You?: {{ feedback.agree }}</p>
+      <p>How?: {{ feedback.contacttype }}</p>
+      <p>Feedback: {{ feedback.message }}</p>
+    </div>
   </div>
 </div>

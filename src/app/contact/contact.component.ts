@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Params, ActivatedRoute } from '@angular/router';
 import { Feedback, ContactType } from '../shared/feedback';
 import { Location } from '@angular/common';
 import { switchMap } from 'rxjs';
@@ -12,7 +13,7 @@ import { FeedbackService } from '../services/feedback.service';
   host: {
     '[@flyInOut]': 'true',
     'style': 'display: block;'
-    },
+  },
   animations: [
     visibility(),
     flyInOut(),
@@ -27,8 +28,16 @@ export class ContactComponent implements OnInit {
   feedback: Feedback;
   feedcopy: Feedback;
   contactType = ContactType;
-
+  isLoading: boolean;
+  showResponse: boolean;
   @ViewChild('fform') feedbackFormDirective;
+  feedbackResult: any;
+
+  isShown = false;
+  fadeInOut(): void {
+    this.isShown = !this.isShown;
+  }
+
 
   formErrors = {
     'firstname': '',
@@ -39,27 +48,28 @@ export class ContactComponent implements OnInit {
 
   validationMessages = {
     'firstname': {
-      'required':      'First Name is required.',
-      'minlength':     'First Name must be at least 2 characters long.',
-      'maxlength':     'FirstName cannot be more than 25 characters long.'
+      'required': 'First Name is required.',
+      'minlength': 'First Name must be at least 2 characters long.',
+      'maxlength': 'FirstName cannot be more than 25 characters long.'
     },
     'lastname': {
-      'required':      'Last Name is required.',
-      'minlength':     'Last Name must be at least 2 characters long.',
-      'maxlength':     'Last Name cannot be more than 25 characters long.'
+      'required': 'Last Name is required.',
+      'minlength': 'Last Name must be at least 2 characters long.',
+      'maxlength': 'Last Name cannot be more than 25 characters long.'
     },
     'telnum': {
-      'required':      'Tel. number is required.',
-      'pattern':       'Tel. number must contain only numbers.'
+      'required': 'Tel. number is required.',
+      'pattern': 'Tel. number must contain only numbers.'
     },
     'email': {
-      'required':      'Email is required.',
-      'email':         'Email not in valid format.'
+      'required': 'Email is required.',
+      'email': 'Email not in valid format.'
     },
   };
 
   constructor(private fb: FormBuilder,
     public feedbackService: FeedbackService,
+    public route: ActivatedRoute,
     public location: Location,
     public cmt: FormBuilder,
     @Inject('BaseURL') public BaseURL) {
@@ -71,10 +81,10 @@ export class ContactComponent implements OnInit {
 
   createForm(): void {
     this.feedbackForm = this.fb.group({
-      firstname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)] ],
-      lastname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)] ],
-      telnum: ['', [Validators.required, Validators.pattern] ],
-      email: ['', [Validators.required, Validators.email] ],
+      firstname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]],
+      lastname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]],
+      telnum: ['', [Validators.required, Validators.pattern]],
+      email: ['', [Validators.required, Validators.email]],
       agree: false,
       contacttype: 'None',
       message: ''
@@ -107,23 +117,29 @@ export class ContactComponent implements OnInit {
 
   onSubmit() {
     this.feedback = this.feedbackForm.value;
-    this.feedback.date = new Date().toISOString();
-    console.log(this.feedback);
-    this.feedbackService.postFeedback(this.feedcopy)
-      .subscribe(feedback => {
-    this.feedback = feedback; this.feedcopy = feedback;
-  },
-  errmess => { this.feedback = null!; this.feedcopy = null!; this.errMess = <any>errmess;}
-  );
+    this.feedbackService.postFeedback(this.feedback)
+    .subscribe(feedback => {
+      this.feedback = feedback
+    }),errmess => this.errMess = <any>errmess;
+
+    this.feedbackService.getFeedback().subscribe(feedbackResult => this.feedbackResult = feedbackResult);
+      this.route.params
+      .pipe(switchMap((_params: Params) => {  return this.feedbackService.getFeedback() }));
+
+      this.feedbackService.getFeaturedFeedback()
+    .subscribe(feedback => this.feedback = feedback );
+
+
     this.feedbackForm.reset({
-      firstname: '',
-      lastname: '',
-      telnum: 0,
-      email: '',
-      agree: false,
-      contacttype: 'None',
-      message: ''
+     firstname: '',
+    lastname: '',
+    telnum: 0,
+    email: '',
+    agree: false,
+    contacttype: 'None',
+    message: ''
     });
+
     this.feedbackFormDirective.resetForm();
   }
 
