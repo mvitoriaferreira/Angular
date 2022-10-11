@@ -1,7 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
-import { flyInOut } from '../animations/app.animation';
+import { Location } from '@angular/common';
+import { switchMap } from 'rxjs';
+import { visibility, flyInOut, expand } from '../animations/app.animation';
+import { FeedbackService } from '../services/feedback.service';
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
@@ -10,15 +13,19 @@ import { flyInOut } from '../animations/app.animation';
     '[@flyInOut]': 'true',
     'style': 'display: block;'
     },
-    animations: [
-      flyInOut()
-    ]
+  animations: [
+    visibility(),
+    flyInOut(),
+    expand()
+  ]
 })
 
 export class ContactComponent implements OnInit {
 
+  errMess: string;
   feedbackForm: FormGroup;
   feedback: Feedback;
+  feedcopy: Feedback;
   contactType = ContactType;
 
   @ViewChild('fform') feedbackFormDirective;
@@ -51,7 +58,11 @@ export class ContactComponent implements OnInit {
     },
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+    public feedbackService: FeedbackService,
+    public location: Location,
+    public cmt: FormBuilder,
+    @Inject('BaseURL') public BaseURL) {
     this.createForm();
   }
 
@@ -74,7 +85,7 @@ export class ContactComponent implements OnInit {
     this.onValueChanged();
   }
 
-  onValueChanged(data?: any) {
+  onValueChanged(_data?: any) {
     if (!this.feedbackForm) { return; }
     const form = this.feedbackForm;
     for (const field in this.formErrors) {
@@ -96,7 +107,14 @@ export class ContactComponent implements OnInit {
 
   onSubmit() {
     this.feedback = this.feedbackForm.value;
+    this.feedback.date = new Date().toISOString();
     console.log(this.feedback);
+    this.feedbackService.postFeedback(this.feedcopy)
+      .subscribe(feedback => {
+    this.feedback = feedback; this.feedcopy = feedback;
+  },
+  errmess => { this.feedback = null!; this.feedcopy = null!; this.errMess = <any>errmess;}
+  );
     this.feedbackForm.reset({
       firstname: '',
       lastname: '',
