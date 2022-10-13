@@ -127,11 +127,10 @@ export class ContactComponent implements OnInit {
       .pipe(switchMap((_params: Params) => {  return this.feedbackService.getFeedback() }));
 
       this.feedbackService.getFeaturedFeedback()
-    .subscribe(feedback => this.feedback = feedback );
-
+        .subscribe(feedback => this.feedback = feedback);
 
     this.feedbackForm.reset({
-     firstname: '',
+    firstname: '',
     lastname: '',
     telnum: 0,
     email: '',
@@ -139,7 +138,7 @@ export class ContactComponent implements OnInit {
     contacttype: 'None',
     message: ''
     });
-
+    this.isShown;
     this.feedbackFormDirective.resetForm();
   }
 
