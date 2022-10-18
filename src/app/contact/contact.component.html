@@ -81,13 +81,13 @@
       <mat-list *ngIf="feedbackResult">
         <h3><b>Your Submission</b></h3>
         <mat-list-item>
-          <p matLine>First Name: {{feedback.firstname}} </p>
-          <p matLine>Last Name: {{feedback.lastname}}</p>
-          <p matLine>Tel. Number: {{feedback.telnum}}</p>
-          <p matLine>Email: {{feedback.email}}</p>
-          <p matLine>Contact You?{{feedback.agree}}</p>
-          <p matLine>How? {{feedback.contacttype}}</p>
-          <p matLine>Feedback {{feedback.message}}</p>
+          <p>First Name: {{feedback.firstname}} </p>
+          <p>Last Name: {{feedback.lastname}}</p>
+          <p>Tel. Number: {{feedback.telnum}}</p>
+          <p>Email: {{feedback.email}}</p>
+          <p>Contact You? : {{feedback.agree}}</p>
+          <p>How? : {{feedback.contacttype}}</p>
+          <p>Feedback: {{feedback.message}}</p>
         </mat-list-item>
       </mat-list>
       <div [hidden]="feedbackResult">
